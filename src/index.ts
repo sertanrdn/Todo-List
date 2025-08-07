@@ -1,3 +1,12 @@
+// Defining the Types
+type Todo = {
+    id: number;
+    text: string;
+    isComplete: boolean;
+}
+
+let todos: Todo[] = [];
+
 // Title
 const title = document.createElement("h1");
 title.textContent = "To-Do List";
