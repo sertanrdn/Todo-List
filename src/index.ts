@@ -30,13 +30,25 @@ document.body.appendChild(form);
 const list = document.createElement("ul");
 document.body.appendChild(list);
 
+let nextId = 1;
+
 // Handling form submit
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     const taskText = input.value.trim();
     if (taskText !== "") {
+        // Creating new todo object
+        const newTodo: Todo = {
+            id: nextId++,
+            text: taskText,
+            isComplete: false,
+        }
+
+        todos.push(newTodo);
+
+        // Render in DOM
         const listEl = document.createElement("li");
-        listEl.textContent = taskText;
+        listEl.textContent = newTodo.text;
         list.appendChild(listEl);
         input.value = "";
     }
