@@ -45,11 +45,40 @@ form.addEventListener("submit", (e) => {
         }
 
         todos.push(newTodo);
-
-        // Render in DOM
-        const listEl = document.createElement("li");
-        listEl.textContent = newTodo.text;
-        list.appendChild(listEl);
+        renderTodos(todos);
         input.value = "";
     }
 });
+
+// Rendering Todos
+function renderTodos(todos: Todo[]) {
+    list.innerHTML = ""; // clear current list
+    todos.forEach((todo) => {
+        const li = document.createElement("li");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = todo.isComplete;
+        checkbox.addEventListener("change", () => {
+            todo.isComplete = checkbox.checked;
+            renderTodos(todos); // Re-render after state change
+        });
+
+        const span = document.createElement("span");
+        span.textContent = todo.text;
+        if (todo.isComplete) {
+            span.style.textDecoration = "line-through";
+        }
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "DELETE";
+        deleteBtn.addEventListener("click", () => {
+            todos = todos.filter((t) => t.id !== todo.id);
+            renderTodos(todos);
+        });
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(deleteBtn);
+        list.appendChild(li);
+    });
+}
