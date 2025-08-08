@@ -6,7 +6,9 @@ type Todo = {
 }
 
 let todos: Todo[] = [];
+let nextId = 1;
 
+// -- DOM Elements --
 // Title
 const title = document.createElement("h1");
 title.textContent = "To-Do List";
@@ -30,25 +32,30 @@ document.body.appendChild(form);
 const list = document.createElement("ul");
 document.body.appendChild(list);
 
-let nextId = 1;
-
-// Handling form submit
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const taskText = input.value.trim();
-    if (taskText !== "") {
-        // Creating new todo object
-        const newTodo: Todo = {
-            id: nextId++,
-            text: taskText,
-            isComplete: false,
-        }
-
-        todos.push(newTodo);
-        renderTodos(todos);
-        input.value = "";
+// Add Todos
+function addTodo(text: string): void {
+    const newTodo: Todo = {
+        id: nextId++,
+        text,
+        isComplete: false
     }
-});
+    todos.push(newTodo);
+    renderTodos(todos);
+}
+
+// Toggle Todo
+function toggleTodo(id: number): void {
+    todos = todos.map(todo => 
+        todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
+    );
+    renderTodos(todos);
+}
+
+// Delete Todo
+function deleteTodo(id: number): void {
+    todos = todos.filter(todo => todo.id !== id);
+    renderTodos(todos);
+}
 
 // Rendering Todos
 function renderTodos(todos: Todo[]) {
@@ -58,10 +65,7 @@ function renderTodos(todos: Todo[]) {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = todo.isComplete;
-        checkbox.addEventListener("change", () => {
-            todo.isComplete = checkbox.checked;
-            renderTodos(todos); // Re-render after state change
-        });
+        checkbox.addEventListener("change", () => toggleTodo(todo.id));
 
         const span = document.createElement("span");
         span.textContent = todo.text;
@@ -71,10 +75,7 @@ function renderTodos(todos: Todo[]) {
 
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "DELETE";
-        deleteBtn.addEventListener("click", () => {
-            todos = todos.filter((t) => t.id !== todo.id);
-            renderTodos(todos);
-        });
+        deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
 
         li.appendChild(checkbox);
         li.appendChild(span);
@@ -82,3 +83,13 @@ function renderTodos(todos: Todo[]) {
         list.appendChild(li);
     });
 }
+
+// Handling form submit
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const taskText = input.value.trim();
+    if (taskText !== "") {
+        addTodo(taskText);
+        input.value = "";
+    }
+});
