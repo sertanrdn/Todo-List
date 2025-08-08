@@ -57,6 +57,14 @@ function deleteTodo(id: number): void {
     renderTodos(todos);
 }
 
+// Edit Todo
+function editTodo(id: number, newText: string): void {
+    todos = todos.map(todo => 
+        todo.id === id ? { ...todo, text: newText } : todo
+    );
+    renderTodos(todos);
+}
+
 // Rendering Todos
 function renderTodos(todos: Todo[]) {
     list.innerHTML = ""; // clear current list
@@ -77,9 +85,14 @@ function renderTodos(todos: Todo[]) {
         deleteBtn.textContent = "DELETE";
         deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
 
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "EDIT";
+        editBtn.addEventListener("click", () => handleEdit(todo, li));
+
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(deleteBtn);
+        li.appendChild(editBtn);
         list.appendChild(li);
     });
 }
@@ -93,3 +106,24 @@ form.addEventListener("submit", (e) => {
         input.value = "";
     }
 });
+
+// Handling Edit Mode (Helper func.)
+function handleEdit(todo: Todo, li: HTMLLIElement): void {
+    const editInput = document.createElement("input");
+    editInput.type = "text";
+    editInput.value = todo.text;
+
+    const saveBtn = document.createElement("button");
+    saveBtn.textContent = "SAVE";
+
+    li.innerHTML = "";
+    li.appendChild(editInput);
+    li.appendChild(saveBtn);
+
+    saveBtn.addEventListener("click", () => {
+        const newText = editInput.value.trim();
+        if (newText !== "") {
+            editTodo(todo.id, newText);
+        }
+    });
+}
