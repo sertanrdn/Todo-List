@@ -116,14 +116,25 @@ function handleEdit(todo: Todo, li: HTMLLIElement): void {
     const saveBtn = document.createElement("button");
     saveBtn.textContent = "SAVE";
 
-    li.innerHTML = "";
+    const cancelBtn = document.createElement("button");
+    cancelBtn.textContent = "CANCEL";
+    cancelBtn.type = "button";
+
+    while (li.firstChild) {
+        li.removeChild(li.firstChild);
+    }
     li.appendChild(editInput);
     li.appendChild(saveBtn);
+    li.appendChild(cancelBtn);
 
     saveBtn.addEventListener("click", () => {
         const newText = editInput.value.trim();
         if (newText !== "") {
             editTodo(todo.id, newText);
         }
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        renderTodos(todos);
     });
 }
