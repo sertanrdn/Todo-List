@@ -5,8 +5,11 @@ type Todo = {
     isComplete: boolean;
 }
 
-let todos: Todo[] = [];
-let nextId = 1;
+const storedNextId = localStorage.getItem("nextId");
+let nextId = storedNextId ? parseInt(storedNextId) : 1;
+
+const storedTodos = localStorage.getItem("todos");
+let todos: Todo[] = storedTodos ? JSON.parse(storedTodos) : [];
 
 // -- DOM Elements --
 // Title
@@ -40,6 +43,7 @@ function addTodo(text: string): void {
         isComplete: false
     }
     todos.push(newTodo);
+    saveToLocalStorage();
     renderTodos(todos);
 }
 
@@ -48,12 +52,14 @@ function toggleTodo(id: number): void {
     todos = todos.map(todo => 
         todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
     );
+    saveToLocalStorage();
     renderTodos(todos);
 }
 
 // Delete Todo
 function deleteTodo(id: number): void {
     todos = todos.filter(todo => todo.id !== id);
+    saveToLocalStorage();
     renderTodos(todos);
 }
 
@@ -62,7 +68,14 @@ function editTodo(id: number, newText: string): void {
     todos = todos.map(todo => 
         todo.id === id ? { ...todo, text: newText } : todo
     );
+    saveToLocalStorage();
     renderTodos(todos);
+}
+
+// Save both todos and nextId to localStorage
+function saveToLocalStorage(): void {
+    localStorage.setItem("todos", JSON.stringify(todos));
+    localStorage.setItem("nextId", nextId.toString());
 }
 
 // Rendering Todos
@@ -138,3 +151,5 @@ function handleEdit(todo: Todo, li: HTMLLIElement): void {
         renderTodos(todos);
     });
 }
+
+renderTodos(todos);
