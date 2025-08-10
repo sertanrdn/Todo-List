@@ -84,9 +84,13 @@ function setFilter(filter: "all" | "active" | "completed") {
     currentFilter = filter;
     localStorage.setItem("filter", filter);
 
-    if (filter === "all") setActiveFilter(allBtn);
-    else if (filter === "active") setActiveFilter(activeBtn);
-    else if (filter === "completed") setActiveFilter(completedBtn);
+    const filterToButton: Record<"all" | "active" | "completed", HTMLButtonElement> = {
+        all: allBtn,
+        active: activeBtn,
+        completed: completedBtn
+    };
+
+    setActiveFilter(filterToButton[filter]);
 
     renderTodos(todos);
 }
@@ -209,9 +213,4 @@ function handleEdit(todo: Todo, li: HTMLLIElement): void {
     });
 }
 
-// Set the correct filter button as active on page load
-if (currentFilter === "all") setActiveFilter(allBtn);
-else if (currentFilter === "active") setActiveFilter(activeBtn);
-else if (currentFilter === "completed") setActiveFilter(completedBtn);
-
-renderTodos(todos);
+setFilter(currentFilter);
