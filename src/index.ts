@@ -20,7 +20,7 @@ if (storedTodos) {
     todos = [];
 }
 
-let currentFilter: "all" | "active" | "completed" = "all";
+let currentFilter = (localStorage.getItem("filter") as "all" | "active" | "completed") || "all";
 
 // -- DOM Elements --
 // Title
@@ -48,29 +48,17 @@ const filterContainer = document.createElement("div");
 const allBtn = document.createElement("button");
 allBtn.textContent = "All";
 allBtn.type = "button";
-allBtn.addEventListener("click", () => {
-    currentFilter = "all";
-    setActiveFilter(allBtn);
-    renderTodos(todos);
-});
+allBtn.addEventListener("click", () => setFilter("all"));
 
 const activeBtn = document.createElement("button");
 activeBtn.textContent = "Active";
 activeBtn.type = "button";
-activeBtn.addEventListener("click", () => {
-    currentFilter = "active";
-    setActiveFilter(activeBtn);
-    renderTodos(todos);
-});
+activeBtn.addEventListener("click", () => setFilter("active"));
 
 const completedBtn = document.createElement("button");
 completedBtn.textContent = "Completed";
 completedBtn.type = "button";
-completedBtn.addEventListener("click", () => {
-    currentFilter = "completed";
-    setActiveFilter(completedBtn);
-    renderTodos(todos);
-});
+completedBtn.addEventListener("click", () => setFilter("completed"));
 
 filterContainer.appendChild(allBtn);
 filterContainer.appendChild(activeBtn);
@@ -90,6 +78,17 @@ function saveToLocalStorage(): void {
 function setActiveFilter(button: HTMLButtonElement) {
     [allBtn, activeBtn, completedBtn].forEach(btn => btn.classList.remove("active-filter"));
     button.classList.add("active-filter");
+}
+
+function setFilter(filter: "all" | "active" | "completed") {
+    currentFilter = filter;
+    localStorage.setItem("filter", filter);
+
+    if (filter === "all") setActiveFilter(allBtn);
+    else if (filter === "active") setActiveFilter(activeBtn);
+    else if (filter === "completed") setActiveFilter(completedBtn);
+
+    renderTodos(todos);
 }
 
 // Add Todos
@@ -209,5 +208,10 @@ function handleEdit(todo: Todo, li: HTMLLIElement): void {
         renderTodos(todos);
     });
 }
+
+// Set the correct filter button as active on page load
+if (currentFilter === "all") setActiveFilter(allBtn);
+else if (currentFilter === "active") setActiveFilter(activeBtn);
+else if (currentFilter === "completed") setActiveFilter(completedBtn);
 
 renderTodos(todos);
