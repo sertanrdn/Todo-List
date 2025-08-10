@@ -6,10 +6,19 @@ type Todo = {
 }
 
 const storedNextId = localStorage.getItem("nextId");
-let nextId = storedNextId ? parseInt(storedNextId) : 1;
+let nextId = storedNextId ? (parseInt(storedNextId) || 1) : 1;
 
 const storedTodos = localStorage.getItem("todos");
-let todos: Todo[] = storedTodos ? JSON.parse(storedTodos) : [];
+let todos: Todo[];
+if (storedTodos) {
+    try {
+        todos = JSON.parse(storedTodos);
+    } catch(e) {
+        todos = [];
+    }
+} else {
+    todos = [];
+}
 
 // -- DOM Elements --
 // Title
@@ -35,13 +44,20 @@ document.body.appendChild(form);
 const list = document.createElement("ul");
 document.body.appendChild(list);
 
+// Save both todos and nextId to localStorage
+function saveToLocalStorage(): void {
+    localStorage.setItem("todos", JSON.stringify(todos));
+    localStorage.setItem("nextId", nextId.toString());
+}
+
 // Add Todos
 function addTodo(text: string): void {
     const newTodo: Todo = {
-        id: nextId++,
+        id: nextId,
         text,
         isComplete: false
     }
+    nextId++;
     todos.push(newTodo);
     saveToLocalStorage();
     renderTodos(todos);
@@ -70,12 +86,6 @@ function editTodo(id: number, newText: string): void {
     );
     saveToLocalStorage();
     renderTodos(todos);
-}
-
-// Save both todos and nextId to localStorage
-function saveToLocalStorage(): void {
-    localStorage.setItem("todos", JSON.stringify(todos));
-    localStorage.setItem("nextId", nextId.toString());
 }
 
 // Rendering Todos
