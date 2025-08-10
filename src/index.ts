@@ -50,6 +50,7 @@ allBtn.textContent = "All";
 allBtn.type = "button";
 allBtn.addEventListener("click", () => {
     currentFilter = "all";
+    setActiveFilter(allBtn);
     renderTodos(todos);
 });
 
@@ -58,6 +59,7 @@ activeBtn.textContent = "Active";
 activeBtn.type = "button";
 activeBtn.addEventListener("click", () => {
     currentFilter = "active";
+    setActiveFilter(activeBtn);
     renderTodos(todos);
 });
 
@@ -66,6 +68,7 @@ completedBtn.textContent = "Completed";
 completedBtn.type = "button";
 completedBtn.addEventListener("click", () => {
     currentFilter = "completed";
+    setActiveFilter(completedBtn);
     renderTodos(todos);
 });
 
@@ -82,6 +85,11 @@ document.body.appendChild(list);
 function saveToLocalStorage(): void {
     localStorage.setItem("todos", JSON.stringify(todos));
     localStorage.setItem("nextId", nextId.toString());
+}
+
+function setActiveFilter(button: HTMLButtonElement) {
+    [allBtn, activeBtn, completedBtn].forEach(btn => btn.classList.remove("active-filter"));
+    button.classList.add("active-filter");
 }
 
 // Add Todos
