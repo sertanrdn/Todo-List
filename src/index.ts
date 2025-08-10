@@ -20,6 +20,8 @@ if (storedTodos) {
     todos = [];
 }
 
+let currentFilter = (localStorage.getItem("filter") as "all" | "active" | "completed") || "all";
+
 // -- DOM Elements --
 // Title
 const title = document.createElement("h1");
@@ -40,6 +42,29 @@ form.appendChild(input);
 form.appendChild(button);
 document.body.appendChild(form);
 
+// Filter buttons
+const filterContainer = document.createElement("div");
+
+const allBtn = document.createElement("button");
+allBtn.textContent = "All";
+allBtn.type = "button";
+allBtn.addEventListener("click", () => setFilter("all"));
+
+const activeBtn = document.createElement("button");
+activeBtn.textContent = "Active";
+activeBtn.type = "button";
+activeBtn.addEventListener("click", () => setFilter("active"));
+
+const completedBtn = document.createElement("button");
+completedBtn.textContent = "Completed";
+completedBtn.type = "button";
+completedBtn.addEventListener("click", () => setFilter("completed"));
+
+filterContainer.appendChild(allBtn);
+filterContainer.appendChild(activeBtn);
+filterContainer.appendChild(completedBtn);
+document.body.appendChild(filterContainer);
+
 // List Container
 const list = document.createElement("ul");
 document.body.appendChild(list);
@@ -48,6 +73,26 @@ document.body.appendChild(list);
 function saveToLocalStorage(): void {
     localStorage.setItem("todos", JSON.stringify(todos));
     localStorage.setItem("nextId", nextId.toString());
+}
+
+function setActiveFilter(button: HTMLButtonElement) {
+    [allBtn, activeBtn, completedBtn].forEach(btn => btn.classList.remove("active-filter"));
+    button.classList.add("active-filter");
+}
+
+function setFilter(filter: "all" | "active" | "completed") {
+    currentFilter = filter;
+    localStorage.setItem("filter", filter);
+
+    const filterToButton: Record<"all" | "active" | "completed", HTMLButtonElement> = {
+        all: allBtn,
+        active: activeBtn,
+        completed: completedBtn
+    };
+
+    setActiveFilter(filterToButton[filter]);
+
+    renderTodos(todos);
 }
 
 // Add Todos
@@ -91,7 +136,13 @@ function editTodo(id: number, newText: string): void {
 // Rendering Todos
 function renderTodos(todos: Todo[]) {
     list.innerHTML = ""; // clear current list
-    todos.forEach((todo) => {
+    const filtered = todos.filter(todo => {
+        if (currentFilter === "active") return !todo.isComplete;
+        if (currentFilter === "completed") return todo.isComplete;
+        return true;
+    });
+
+    filtered.forEach((todo) => {
         const li = document.createElement("li");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
@@ -162,4 +213,4 @@ function handleEdit(todo: Todo, li: HTMLLIElement): void {
     });
 }
 
-renderTodos(todos);
+setFilter(currentFilter);
