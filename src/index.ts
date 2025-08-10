@@ -20,6 +20,8 @@ if (storedTodos) {
     todos = [];
 }
 
+let currentFilter: "all" | "active" | "completed" = "all";
+
 // -- DOM Elements --
 // Title
 const title = document.createElement("h1");
@@ -39,6 +41,38 @@ button.textContent = "Add";
 form.appendChild(input);
 form.appendChild(button);
 document.body.appendChild(form);
+
+// Filter buttons
+const filterContainer = document.createElement("div");
+
+const allBtn = document.createElement("button");
+allBtn.textContent = "All";
+allBtn.type = "button";
+allBtn.addEventListener("click", () => {
+    currentFilter = "all";
+    renderTodos(todos);
+});
+
+const activeBtn = document.createElement("button");
+activeBtn.textContent = "Active";
+activeBtn.type = "button";
+activeBtn.addEventListener("click", () => {
+    currentFilter = "active";
+    renderTodos(todos);
+});
+
+const completedBtn = document.createElement("button");
+completedBtn.textContent = "Completed";
+completedBtn.type = "button";
+completedBtn.addEventListener("click", () => {
+    currentFilter = "completed";
+    renderTodos(todos);
+});
+
+filterContainer.appendChild(allBtn);
+filterContainer.appendChild(activeBtn);
+filterContainer.appendChild(completedBtn);
+document.body.appendChild(filterContainer);
 
 // List Container
 const list = document.createElement("ul");
@@ -91,7 +125,13 @@ function editTodo(id: number, newText: string): void {
 // Rendering Todos
 function renderTodos(todos: Todo[]) {
     list.innerHTML = ""; // clear current list
-    todos.forEach((todo) => {
+    const filtered = todos.filter(todo => {
+        if (currentFilter === "active") return !todo.isComplete;
+        if (currentFilter === "completed") return todo.isComplete;
+        return true;
+    });
+
+    filtered.forEach((todo) => {
         const li = document.createElement("li");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
