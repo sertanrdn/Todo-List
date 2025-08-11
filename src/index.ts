@@ -1,35 +1,8 @@
-// Defining the Types
-type Todo = {
-    id: number;
-    text: string;
-    isComplete: boolean;
-}
-
-enum Filter {
-    All = "all",
-    Active = "active",
-    Completed = "completed"
-}
-
-const storedNextId = localStorage.getItem("nextId");
-let nextId = storedNextId ? (parseInt(storedNextId) || 1) : 1;
-
-const storedTodos = localStorage.getItem("todos");
-let todos: Todo[];
-if (storedTodos) {
-    try {
-        todos = JSON.parse(storedTodos);
-    } catch(e) {
-        todos = [];
-    }
-} else {
-    todos = [];
-}
-
-const storedFilter = localStorage.getItem("filter");
-let currentFilter: Filter = storedFilter && isValidFilter(storedFilter) 
-    ? storedFilter 
-    : Filter.All;
+import { Filter } from "./types";
+import { currentFilter } from "./state";
+import { addTodo } from "./todos";
+import { setFilter, initFilters } from "./filters";
+import { renderTodos } from "./render";
 
 // -- DOM Elements --
 // Title
@@ -74,115 +47,7 @@ filterContainer.appendChild(activeBtn);
 filterContainer.appendChild(completedBtn);
 document.body.appendChild(filterContainer);
 
-// List Container
-const list = document.createElement("ul");
-document.body.appendChild(list);
-
-// Save both todos and nextId to localStorage
-function saveToLocalStorage(): void {
-    localStorage.setItem("todos", JSON.stringify(todos));
-    localStorage.setItem("nextId", nextId.toString());
-}
-
-function isValidFilter(value: any): value is Filter {
-    return value === Filter.All || value === Filter.Active || value === Filter.Completed;
-}
-
-function setActiveFilter(button: HTMLButtonElement) {
-    [allBtn, activeBtn, completedBtn].forEach(btn => btn.classList.remove("active-filter"));
-    button.classList.add("active-filter");
-}
-
-function setFilter(filter: Filter) {
-    currentFilter = filter;
-    localStorage.setItem("filter", filter);
-
-    const filterToButton: Record<Filter, HTMLButtonElement> = {
-        [Filter.All]: allBtn,
-        [Filter.Active]: activeBtn,
-        [Filter.Completed]: completedBtn
-    };
-
-    setActiveFilter(filterToButton[filter]);
-
-    renderTodos(todos);
-}
-
-// Add Todos
-function addTodo(text: string): void {
-    const newTodo: Todo = {
-        id: nextId,
-        text,
-        isComplete: false
-    }
-    nextId++;
-    todos.push(newTodo);
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Toggle Todo
-function toggleTodo(id: number): void {
-    todos = todos.map(todo => 
-        todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
-    );
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Delete Todo
-function deleteTodo(id: number): void {
-    todos = todos.filter(todo => todo.id !== id);
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Edit Todo
-function editTodo(id: number, newText: string): void {
-    todos = todos.map(todo => 
-        todo.id === id ? { ...todo, text: newText } : todo
-    );
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Rendering Todos
-function renderTodos(todos: Todo[]) {
-    list.innerHTML = ""; // clear current list
-    const filtered = todos.filter(todo => {
-        if (currentFilter === Filter.Active) return !todo.isComplete;
-        if (currentFilter === Filter.Completed) return todo.isComplete;
-        return true; // Filter.All
-    });
-
-    filtered.forEach((todo) => {
-        const li = document.createElement("li");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = todo.isComplete;
-        checkbox.addEventListener("change", () => toggleTodo(todo.id));
-
-        const span = document.createElement("span");
-        span.textContent = todo.text;
-        if (todo.isComplete) {
-            span.style.textDecoration = "line-through";
-        }
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "DELETE";
-        deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
-
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "EDIT";
-        editBtn.addEventListener("click", () => handleEdit(todo, li));
-
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
-        li.appendChild(editBtn);
-        list.appendChild(li);
-    });
-}
+initFilters(allBtn, activeBtn, completedBtn);
 
 // Handling form submit
 form.addEventListener("submit", (e) => {
@@ -194,36 +59,5 @@ form.addEventListener("submit", (e) => {
     }
 });
 
-// Handling Edit Mode (Helper func.)
-function handleEdit(todo: Todo, li: HTMLLIElement): void {
-    const editInput = document.createElement("input");
-    editInput.type = "text";
-    editInput.value = todo.text;
-
-    const saveBtn = document.createElement("button");
-    saveBtn.textContent = "SAVE";
-
-    const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "CANCEL";
-    cancelBtn.type = "button";
-
-    while (li.firstChild) {
-        li.removeChild(li.firstChild);
-    }
-    li.appendChild(editInput);
-    li.appendChild(saveBtn);
-    li.appendChild(cancelBtn);
-
-    saveBtn.addEventListener("click", () => {
-        const newText = editInput.value.trim();
-        if (newText !== "") {
-            editTodo(todo.id, newText);
-        }
-    });
-
-    cancelBtn.addEventListener("click", () => {
-        renderTodos(todos);
-    });
-}
-
 setFilter(currentFilter);
+renderTodos();
