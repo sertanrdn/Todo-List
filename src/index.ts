@@ -1,41 +1,13 @@
-// Defining the Types
-type Todo = {
-    id: number;
-    text: string;
-    isComplete: boolean;
-}
-
-enum Filter {
-    All = "all",
-    Active = "active",
-    Completed = "completed"
-}
-
-const storedNextId = localStorage.getItem("nextId");
-let nextId = storedNextId ? (parseInt(storedNextId) || 1) : 1;
-
-const storedTodos = localStorage.getItem("todos");
-let todos: Todo[];
-if (storedTodos) {
-    try {
-        todos = JSON.parse(storedTodos);
-    } catch(e) {
-        todos = [];
-    }
-} else {
-    todos = [];
-}
-
-const storedFilter = localStorage.getItem("filter");
-let currentFilter: Filter = storedFilter && isValidFilter(storedFilter) 
-    ? storedFilter 
-    : Filter.All;
+import { Filter } from "./types.js";
+import { currentFilter } from "./state.js";
+import { addTodo } from "./todos.js";
+import { setFilter, initFilters } from "./filters.js";
+import { renderTodos } from "./render.js";
 
 // -- DOM Elements --
 // Title
 const title = document.createElement("h1");
 title.textContent = "To-Do List";
-document.body.appendChild(title);
 
 // Form
 const form = document.createElement("form");
@@ -46,10 +18,8 @@ input.required = true;
 
 const button = document.createElement("button");
 button.textContent = "Add";
-
 form.appendChild(input);
 form.appendChild(button);
-document.body.appendChild(form);
 
 // Filter buttons
 const filterContainer = document.createElement("div");
@@ -57,173 +27,41 @@ const filterContainer = document.createElement("div");
 const allBtn = document.createElement("button");
 allBtn.textContent = "All";
 allBtn.type = "button";
-allBtn.addEventListener("click", () => setFilter(Filter.All));
+allBtn.addEventListener("click", () => setFilter(Filter.All, list));
 
 const activeBtn = document.createElement("button");
 activeBtn.textContent = "Active";
 activeBtn.type = "button";
-activeBtn.addEventListener("click", () => setFilter(Filter.Active));
+activeBtn.addEventListener("click", () => setFilter(Filter.Active, list));
 
 const completedBtn = document.createElement("button");
 completedBtn.textContent = "Completed";
 completedBtn.type = "button";
-completedBtn.addEventListener("click", () => setFilter(Filter.Completed));
+completedBtn.addEventListener("click", () => setFilter(Filter.Completed, list));
 
 filterContainer.appendChild(allBtn);
 filterContainer.appendChild(activeBtn);
 filterContainer.appendChild(completedBtn);
-document.body.appendChild(filterContainer);
 
-// List Container
+// (Todo) list container
 const list = document.createElement("ul");
+
+document.body.appendChild(title);
+document.body.appendChild(form);
+document.body.appendChild(filterContainer);
 document.body.appendChild(list);
 
-// Save both todos and nextId to localStorage
-function saveToLocalStorage(): void {
-    localStorage.setItem("todos", JSON.stringify(todos));
-    localStorage.setItem("nextId", nextId.toString());
-}
-
-function isValidFilter(value: any): value is Filter {
-    return value === Filter.All || value === Filter.Active || value === Filter.Completed;
-}
-
-function setActiveFilter(button: HTMLButtonElement) {
-    [allBtn, activeBtn, completedBtn].forEach(btn => btn.classList.remove("active-filter"));
-    button.classList.add("active-filter");
-}
-
-function setFilter(filter: Filter) {
-    currentFilter = filter;
-    localStorage.setItem("filter", filter);
-
-    const filterToButton: Record<Filter, HTMLButtonElement> = {
-        [Filter.All]: allBtn,
-        [Filter.Active]: activeBtn,
-        [Filter.Completed]: completedBtn
-    };
-
-    setActiveFilter(filterToButton[filter]);
-
-    renderTodos(todos);
-}
-
-// Add Todos
-function addTodo(text: string): void {
-    const newTodo: Todo = {
-        id: nextId,
-        text,
-        isComplete: false
-    }
-    nextId++;
-    todos.push(newTodo);
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Toggle Todo
-function toggleTodo(id: number): void {
-    todos = todos.map(todo => 
-        todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
-    );
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Delete Todo
-function deleteTodo(id: number): void {
-    todos = todos.filter(todo => todo.id !== id);
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Edit Todo
-function editTodo(id: number, newText: string): void {
-    todos = todos.map(todo => 
-        todo.id === id ? { ...todo, text: newText } : todo
-    );
-    saveToLocalStorage();
-    renderTodos(todos);
-}
-
-// Rendering Todos
-function renderTodos(todos: Todo[]) {
-    list.innerHTML = ""; // clear current list
-    const filtered = todos.filter(todo => {
-        if (currentFilter === Filter.Active) return !todo.isComplete;
-        if (currentFilter === Filter.Completed) return todo.isComplete;
-        return true; // Filter.All
-    });
-
-    filtered.forEach((todo) => {
-        const li = document.createElement("li");
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = todo.isComplete;
-        checkbox.addEventListener("change", () => toggleTodo(todo.id));
-
-        const span = document.createElement("span");
-        span.textContent = todo.text;
-        if (todo.isComplete) {
-            span.style.textDecoration = "line-through";
-        }
-
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "DELETE";
-        deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
-
-        const editBtn = document.createElement("button");
-        editBtn.textContent = "EDIT";
-        editBtn.addEventListener("click", () => handleEdit(todo, li));
-
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
-        li.appendChild(editBtn);
-        list.appendChild(li);
-    });
-}
+initFilters(allBtn, activeBtn, completedBtn);
 
 // Handling form submit
 form.addEventListener("submit", (e) => {
     e.preventDefault();
     const taskText = input.value.trim();
     if (taskText !== "") {
-        addTodo(taskText);
+        addTodo(taskText, list);
         input.value = "";
     }
 });
 
-// Handling Edit Mode (Helper func.)
-function handleEdit(todo: Todo, li: HTMLLIElement): void {
-    const editInput = document.createElement("input");
-    editInput.type = "text";
-    editInput.value = todo.text;
-
-    const saveBtn = document.createElement("button");
-    saveBtn.textContent = "SAVE";
-
-    const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "CANCEL";
-    cancelBtn.type = "button";
-
-    while (li.firstChild) {
-        li.removeChild(li.firstChild);
-    }
-    li.appendChild(editInput);
-    li.appendChild(saveBtn);
-    li.appendChild(cancelBtn);
-
-    saveBtn.addEventListener("click", () => {
-        const newText = editInput.value.trim();
-        if (newText !== "") {
-            editTodo(todo.id, newText);
-        }
-    });
-
-    cancelBtn.addEventListener("click", () => {
-        renderTodos(todos);
-    });
-}
-
-setFilter(currentFilter);
+setFilter(currentFilter, list);
+renderTodos(list);
