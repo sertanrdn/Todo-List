@@ -1,4 +1,4 @@
-import { todos, nextId } from "./state";
+import { todos, nextId } from "./state.js";
 
 // Save both todos and nextId to localStorage
 export function saveToLocalStorage(): void {

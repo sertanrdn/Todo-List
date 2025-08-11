@@ -1,14 +1,11 @@
-import { todos, currentFilter } from "./state";
-import { Filter, type Todo } from "./types";
-import { toggleTodo, deleteTodo, editTodo } from "./todos";
-
-// List Container
-const list = document.createElement("ul");
-document.body.appendChild(list);
+import { todos, currentFilter } from "./state.js";
+import { Filter, type Todo } from "./types.js";
+import { toggleTodo, deleteTodo, editTodo } from "./todos.js";
 
 // Rendering Todos
-export function renderTodos() {
+export function renderTodos(list: HTMLUListElement) {
     list.innerHTML = ""; // clear current list
+
     const filtered = todos.filter(todo => {
         if (currentFilter === Filter.Active) return !todo.isComplete;
         if (currentFilter === Filter.Completed) return todo.isComplete;
@@ -17,10 +14,11 @@ export function renderTodos() {
 
     filtered.forEach((todo) => {
         const li = document.createElement("li");
+
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         checkbox.checked = todo.isComplete;
-        checkbox.addEventListener("change", () => toggleTodo(todo.id));
+        checkbox.addEventListener("change", () => toggleTodo(todo.id, list));
 
         const span = document.createElement("span");
         span.textContent = todo.text;
@@ -30,11 +28,11 @@ export function renderTodos() {
 
         const deleteBtn = document.createElement("button");
         deleteBtn.textContent = "DELETE";
-        deleteBtn.addEventListener("click", () => deleteTodo(todo.id));
+        deleteBtn.addEventListener("click", () => deleteTodo(todo.id, list));
 
         const editBtn = document.createElement("button");
         editBtn.textContent = "EDIT";
-        editBtn.addEventListener("click", () => handleEdit(todo, li));
+        editBtn.addEventListener("click", () => handleEdit(todo, li, list));
 
         li.appendChild(checkbox);
         li.appendChild(span);
@@ -45,7 +43,7 @@ export function renderTodos() {
 }
 
 // Handling Edit Mode (Helper func.)
-function handleEdit(todo: Todo, li: HTMLLIElement): void {
+function handleEdit(todo: Todo, li: HTMLLIElement, list: HTMLUListElement): void {
     const editInput = document.createElement("input");
     editInput.type = "text";
     editInput.value = todo.text;
@@ -67,11 +65,11 @@ function handleEdit(todo: Todo, li: HTMLLIElement): void {
     saveBtn.addEventListener("click", () => {
         const newText = editInput.value.trim();
         if (newText !== "") {
-            editTodo(todo.id, newText);
+            editTodo(todo.id, newText, list);
         }
     });
 
     cancelBtn.addEventListener("click", () => {
-        renderTodos();
+        renderTodos(list);
     });
 }

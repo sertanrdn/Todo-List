@@ -1,6 +1,6 @@
-import { Filter } from "./types";
-import { updateCurrentFilter } from "./state";
-import { renderTodos } from "./render";
+import { Filter } from "./types.js";
+import { updateCurrentFilter } from "./state.js";
+import { renderTodos } from "./render.js";
 
 let allBtn: HTMLButtonElement;
 let activeBtn: HTMLButtonElement;
@@ -17,7 +17,7 @@ export function setActiveFilter(button: HTMLButtonElement) {
     button.classList.add("active-filter");
 }
 
-export function setFilter(filter: Filter) {
+export function setFilter(filter: Filter, list: HTMLUListElement) {
     updateCurrentFilter(filter);
     localStorage.setItem("filter", filter);
 
@@ -29,5 +29,5 @@ export function setFilter(filter: Filter) {
 
     setActiveFilter(filterToButton[filter]);
 
-    renderTodos();
+    renderTodos(list);
 }

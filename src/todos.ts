@@ -1,10 +1,10 @@
-import { type Todo } from "./types";
-import { todos, nextId, updateTodos, updateNextId } from "./state";
-import { saveToLocalStorage } from "./storage";
-import { renderTodos } from "./render";
+import { type Todo } from "./types.js";
+import { todos, nextId, updateTodos, updateNextId } from "./state.js";
+import { saveToLocalStorage } from "./storage.js";
+import { renderTodos } from "./render.js";
 
 // Add Todos
-export function addTodo(text: string): void {
+export function addTodo(text: string, list: HTMLUListElement): void {
     const newTodo: Todo = {
         id: nextId,
         text,
@@ -13,30 +13,30 @@ export function addTodo(text: string): void {
     updateNextId(nextId + 1);
     updateTodos([...todos, newTodo]);
     saveToLocalStorage();
-    renderTodos();
+    renderTodos(list);
 }
 
 // Toggle Todo
-export function toggleTodo(id: number): void {
+export function toggleTodo(id: number, list: HTMLUListElement): void {
     updateTodos(todos.map(todo => 
         todo.id === id ? { ...todo, isComplete: !todo.isComplete } : todo
     ));
     saveToLocalStorage();
-    renderTodos();
+    renderTodos(list);
 }
 
 // Delete Todo
-export function deleteTodo(id: number): void {
+export function deleteTodo(id: number, list: HTMLUListElement): void {
     updateTodos(todos.filter(todo => todo.id !== id));
     saveToLocalStorage();
-    renderTodos();
+    renderTodos(list);
 }
 
 // Edit Todo
-export function editTodo(id: number, newText: string): void {
+export function editTodo(id: number, newText: string, list: HTMLUListElement): void {
     updateTodos(todos.map(todo => 
         todo.id === id ? { ...todo, text: newText } : todo
     ));
     saveToLocalStorage();
-    renderTodos();
+    renderTodos(list);
 }

@@ -1,4 +1,4 @@
-import { type Todo, Filter, isValidFilter } from "./types";
+import { type Todo, Filter, isValidFilter } from "./types.js";
 
 const storedNextId = localStorage.getItem("nextId");
 export let nextId = storedNextId ? (parseInt(storedNextId) || 1) : 1;
