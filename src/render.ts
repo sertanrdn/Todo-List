@@ -1,6 +1,7 @@
 import { todos, currentFilter } from "./state.js";
 import { Filter, type Todo } from "./types.js";
 import { toggleTodo, deleteTodo, editTodo } from "./todos.js";
+import { handleEdit } from "./handleEdit.js";
 
 // Rendering Todos
 export function renderTodos(list: HTMLUListElement) {
@@ -39,37 +40,5 @@ export function renderTodos(list: HTMLUListElement) {
         li.appendChild(deleteBtn);
         li.appendChild(editBtn);
         list.appendChild(li);
-    });
-}
-
-// Handling Edit Mode (Helper func.)
-function handleEdit(todo: Todo, li: HTMLLIElement, list: HTMLUListElement): void {
-    const editInput = document.createElement("input");
-    editInput.type = "text";
-    editInput.value = todo.text;
-
-    const saveBtn = document.createElement("button");
-    saveBtn.textContent = "SAVE";
-
-    const cancelBtn = document.createElement("button");
-    cancelBtn.textContent = "CANCEL";
-    cancelBtn.type = "button";
-
-    while (li.firstChild) {
-        li.removeChild(li.firstChild);
-    }
-    li.appendChild(editInput);
-    li.appendChild(saveBtn);
-    li.appendChild(cancelBtn);
-
-    saveBtn.addEventListener("click", () => {
-        const newText = editInput.value.trim();
-        if (newText !== "") {
-            editTodo(todo.id, newText, list);
-        }
-    });
-
-    cancelBtn.addEventListener("click", () => {
-        renderTodos(list);
     });
 }
