@@ -26,7 +26,10 @@ if (storedTodos) {
     todos = [];
 }
 
-let currentFilter = (localStorage.getItem("filter") as Filter) || Filter.All;
+const storedFilter = localStorage.getItem("filter");
+let currentFilter: Filter = storedFilter && isValidFilter(storedFilter) 
+    ? storedFilter 
+    : Filter.All;
 
 // -- DOM Elements --
 // Title
@@ -79,6 +82,10 @@ document.body.appendChild(list);
 function saveToLocalStorage(): void {
     localStorage.setItem("todos", JSON.stringify(todos));
     localStorage.setItem("nextId", nextId.toString());
+}
+
+function isValidFilter(value: any): value is Filter {
+    return value === Filter.All || value === Filter.Active || value === Filter.Completed;
 }
 
 function setActiveFilter(button: HTMLButtonElement) {
