@@ -5,6 +5,12 @@ type Todo = {
     isComplete: boolean;
 }
 
+enum Filter {
+    All = "all",
+    Active = "active",
+    Completed = "completed"
+}
+
 const storedNextId = localStorage.getItem("nextId");
 let nextId = storedNextId ? (parseInt(storedNextId) || 1) : 1;
 
@@ -20,7 +26,10 @@ if (storedTodos) {
     todos = [];
 }
 
-let currentFilter = (localStorage.getItem("filter") as "all" | "active" | "completed") || "all";
+const storedFilter = localStorage.getItem("filter");
+let currentFilter: Filter = storedFilter && isValidFilter(storedFilter) 
+    ? storedFilter 
+    : Filter.All;
 
 // -- DOM Elements --
 // Title
@@ -48,17 +57,17 @@ const filterContainer = document.createElement("div");
 const allBtn = document.createElement("button");
 allBtn.textContent = "All";
 allBtn.type = "button";
-allBtn.addEventListener("click", () => setFilter("all"));
+allBtn.addEventListener("click", () => setFilter(Filter.All));
 
 const activeBtn = document.createElement("button");
 activeBtn.textContent = "Active";
 activeBtn.type = "button";
-activeBtn.addEventListener("click", () => setFilter("active"));
+activeBtn.addEventListener("click", () => setFilter(Filter.Active));
 
 const completedBtn = document.createElement("button");
 completedBtn.textContent = "Completed";
 completedBtn.type = "button";
-completedBtn.addEventListener("click", () => setFilter("completed"));
+completedBtn.addEventListener("click", () => setFilter(Filter.Completed));
 
 filterContainer.appendChild(allBtn);
 filterContainer.appendChild(activeBtn);
@@ -75,19 +84,23 @@ function saveToLocalStorage(): void {
     localStorage.setItem("nextId", nextId.toString());
 }
 
+function isValidFilter(value: any): value is Filter {
+    return value === Filter.All || value === Filter.Active || value === Filter.Completed;
+}
+
 function setActiveFilter(button: HTMLButtonElement) {
     [allBtn, activeBtn, completedBtn].forEach(btn => btn.classList.remove("active-filter"));
     button.classList.add("active-filter");
 }
 
-function setFilter(filter: "all" | "active" | "completed") {
+function setFilter(filter: Filter) {
     currentFilter = filter;
     localStorage.setItem("filter", filter);
 
-    const filterToButton: Record<"all" | "active" | "completed", HTMLButtonElement> = {
-        all: allBtn,
-        active: activeBtn,
-        completed: completedBtn
+    const filterToButton: Record<Filter, HTMLButtonElement> = {
+        [Filter.All]: allBtn,
+        [Filter.Active]: activeBtn,
+        [Filter.Completed]: completedBtn
     };
 
     setActiveFilter(filterToButton[filter]);
@@ -137,9 +150,9 @@ function editTodo(id: number, newText: string): void {
 function renderTodos(todos: Todo[]) {
     list.innerHTML = ""; // clear current list
     const filtered = todos.filter(todo => {
-        if (currentFilter === "active") return !todo.isComplete;
-        if (currentFilter === "completed") return todo.isComplete;
-        return true;
+        if (currentFilter === Filter.Active) return !todo.isComplete;
+        if (currentFilter === Filter.Completed) return todo.isComplete;
+        return true; // Filter.All
     });
 
     filtered.forEach((todo) => {
