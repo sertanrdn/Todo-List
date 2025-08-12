@@ -5,13 +5,16 @@ import { renderTodos } from "./render.js";
 // Handling Edit Mode (Helper func.)
 export function handleEdit(todo: Todo, li: HTMLLIElement, list: HTMLUListElement): void {
     const editInput = document.createElement("input");
+    editInput.className = "todo-edit-input";
     editInput.type = "text";
     editInput.value = todo.text;
 
     const saveBtn = document.createElement("button");
+    saveBtn.className = "todo-save-btn";
     saveBtn.textContent = "SAVE";
 
     const cancelBtn = document.createElement("button");
+    cancelBtn.className = "todo-cancel-btn";
     cancelBtn.textContent = "CANCEL";
     cancelBtn.type = "button";
 
