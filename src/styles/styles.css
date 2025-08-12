@@ -27,3 +27,52 @@ body {
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
+
+.todo-list {
+    list-style: none;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    margin-bottom: 0.5rem;
+    border-radius: 4px;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+}
+  
+.add-btn {
+    background: #4caf50;
+    color: white;
+}
+  
+.todo-delete-btn {
+    background: #e53935;
+    color: white;
+}
+  
+.todo-edit-btn {
+    background: #1976d2;
+    color: white;
+}
+  
+.filter-button {
+    background: #ddd;
+}
+  
+.filter-button.active-filter {
+    background: #4caf50;
+    color: white;
+}
+  
