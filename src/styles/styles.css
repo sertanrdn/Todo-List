@@ -1,3 +1,20 @@
+:root {
+    --text-color: #333;
+    --text-white: #fff;
+    --button-green: #4caf50;
+    --button-green-hover: #2f8532;
+    --button-gray: #9e9e9e;
+    --button-gray-hover: #757575;
+    --button-red: #e53935;
+    --button-red-hover: #c62828;
+    --border-radius-sm: 4px;
+    --border-radius-md: 6px;
+    --border-radius-lg: 10px;
+    --padding-sm: 0.4rem 0.6rem;
+    --padding-md: 0.6rem 1rem;
+    --transition-fast: 0.2s ease; 
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +24,7 @@
 body {
     font-family: system-ui, -apple-system, sans-serif;
     background-color: #a7d7e7;
-    color: #333;
+    color: var(--text-color);
     padding: 2rem;
     display: flex;
     flex-direction: column;
@@ -17,7 +34,7 @@ body {
 .app-title {
     text-align: center;
     margin-bottom: 1rem;
-    color: #222;
+    color: var(--text-color);
 }
 
 .todo-form {
@@ -37,17 +54,17 @@ body {
 }
 
 .add-btn {
-    background-color: #4caf50;
-    color: white;
+    background-color: var(--button-green);
+    color: var(--text-white);
     border: none;
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
+    padding: var(--padding-md);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-fast);
 }
 
 .add-btn:hover {
-    background-color: #2f8532;
+    background-color: var(--button-green-hover);
 }
 
 .filter-container {
@@ -71,8 +88,8 @@ body {
 }
 
 .filter-button.active-filter {
-    background-color: #4caf50;
-    color: white;
+    background-color: var(--button-green);
+    color: var(--text-white);
 }
 
 .todo-list {
@@ -85,7 +102,7 @@ body {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: white;
+    background: var(--text-white);
     padding: 0.5rem;
     border: 1px solid #ddd;
     margin-bottom: 0.5rem;
@@ -109,21 +126,21 @@ body {
 }
 
 .todo-delete-btn {
-    background: #e53935;
-    color: white;
-    padding: 0.4rem 0.6rem;
+    background: var(--button-red);
+    color: var(--text-white);
+    padding: var(--padding-sm);
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
 }
 
 .todo-delete-btn:hover {
-    background-color: #c62828;
+    background-color: var(--button-red-hover);
 }
   
 .todo-edit-btn {
     background: #1976d2;
-    color: white;
+    color: var(--text-white);
     padding: 0.4rem 0.6rem;
     border: none;
     border-radius: 4px;
@@ -144,29 +161,29 @@ body {
 }
 
 .todo-save-btn {
-    background-color: #4caf50;
-    color: white;
-    padding: 0.4rem 0.6rem;
+    background-color: var(--button-green);
+    color: var(--text-white);
+    padding: var(--padding-sm);
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
 }
   
 .todo-save-btn:hover {
-    background-color: #43a047;
+    background-color: var(--button-green-hover);
 }
   
 .todo-cancel-btn {
-    background-color: #9e9e9e;
-    color: white;
-    padding: 0.4rem 0.6rem;
+    background-color: var(--button-gray);
+    color: var(--text-white);
+    padding: var(--padding-sm);
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius-sm);
     cursor: pointer;
 }
   
 .todo-cancel-btn:hover {
-    background-color: #757575;
+    background-color: var(--button-gray-hover);
 }
 
 /* Modal */
@@ -184,19 +201,19 @@ body {
 }
 
 .modal {
-    background: #fff;
+    background: var(--text-white);
     padding: 1.5rem 2rem;
-    border-radius: 10px;
+    border-radius: var(--border-radius-lg);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     max-width: 350px;
     width: 100%;
     text-align: center;
-    animation: modal-pop 0.2s ease-out;
+    animation: modal-pop var(--transition-fast);
 }
 
 .modal p {
     font-size: 1rem;
-    color: #333;
+    color: var(--text-color);
     margin-bottom: 1rem;
 }
 
@@ -207,33 +224,33 @@ body {
 }
 
 .confirm-btn {
-    background-color: #e74c3c;
-    color: #fff;
+    background-color: var(--button-red);
+    color: var(--text-white);
     border: none;
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
+    padding: var(--padding-md);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background 0.2s ease;
+    transition: background var(--transition-fast);
 }
 
 .confirm-btn:hover {
-    background-color: #c0392b;
+    background-color: var(--button-red-hover);
 }
 
 .cancel-btn {
-    background-color: #bdc3c7;
-    color: #333;
+    background-color: var(--button-gray);
+    color: var(--text-white);
     border: none;
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
+    padding: var(--padding-md);
+    border-radius: var(--border-radius-md);
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background 0.2s ease;
+    transition: background var(--transition-fast);
 }
   
 .cancel-btn:hover {
-    background-color: #95a5a6;
+    background-color: var(--button-gray-hover);
 }
 
 .hidden {
