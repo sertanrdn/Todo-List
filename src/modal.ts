@@ -1,7 +1,4 @@
-import { deleteTodo } from "./todos";
-
-let deleteTargetId: number | null = null;
-let listRef: HTMLUListElement | null = null;
+let onConfirmCallback: (() => void) | null = null;
 
 // Create Modal DOM Elements
 const modalContainer = document.createElement("div");
@@ -32,21 +29,19 @@ modalContainer.appendChild(modal);
 document.body.appendChild(modalContainer);
 
 // Show-Hide functions
-export function showDeleteModal(todoId: number, list: HTMLUListElement): void {
-    deleteTargetId = todoId;
-    listRef = list;
+export function showDeleteModal(onConfirm: () => void): void {
+    onConfirmCallback = onConfirm;
     modalContainer.classList.remove("hidden");
 }
 
 export function hideDeleteModal(): void {
     modalContainer.classList.add("hidden");
-    deleteTargetId = null;
-    listRef = null;
+    onConfirmCallback = null;
 }
 
 confirmBtn.addEventListener("click", () => {
-    if (deleteTargetId !== null && listRef) {
-        deleteTodo(deleteTargetId, listRef);
+    if (onConfirmCallback) {
+        onConfirmCallback();
     }
     hideDeleteModal();
 });
