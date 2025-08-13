@@ -2,6 +2,7 @@ import { todos, currentFilter } from "./state.js";
 import { Filter, type Todo } from "./types.js";
 import { toggleTodo, deleteTodo, editTodo } from "./todos.js";
 import { handleEdit } from "./handleEdit.js";
+import { showDeleteModal } from "./modal.js";
 
 // Rendering Todos
 export function renderTodos(list: HTMLUListElement) {
@@ -33,7 +34,9 @@ export function renderTodos(list: HTMLUListElement) {
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "todo-delete-btn";
         deleteBtn.textContent = "DELETE";
-        deleteBtn.addEventListener("click", () => deleteTodo(todo.id, list));
+        deleteBtn.addEventListener("click", () => {
+            showDeleteModal(() => deleteTodo(todo.id, list))
+        });
 
         const editBtn = document.createElement("button");
         editBtn.className = "todo-edit-btn";
