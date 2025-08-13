@@ -1,4 +1,5 @@
 let onConfirmCallback: (() => void) | null = null;
+let previouslyFocusedElement: HTMLElement | null = null;
 
 // Create Modal DOM Elements
 const modalContainer = document.createElement("div");
@@ -31,12 +32,19 @@ document.body.appendChild(modalContainer);
 // Show-Hide functions
 export function showDeleteModal(onConfirm: () => void): void {
     onConfirmCallback = onConfirm;
+    previouslyFocusedElement = document.activeElement as HTMLElement;
     modalContainer.classList.remove("hidden");
+    confirmBtn.focus();
 }
 
 export function hideDeleteModal(): void {
     modalContainer.classList.add("hidden");
     onConfirmCallback = null;
+
+    if (previouslyFocusedElement) {
+        previouslyFocusedElement.focus();
+        previouslyFocusedElement = null;
+    }
 }
 
 confirmBtn.addEventListener("click", () => {
