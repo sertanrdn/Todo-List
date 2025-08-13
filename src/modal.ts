@@ -1,4 +1,6 @@
-let deleteTargetId: string | null = null;
+import { deleteTodo } from "./todos";
+
+let deleteTargetId: number | null = null;
 let listRef: HTMLUListElement | null = null;
 
 // Create Modal DOM Elements
@@ -29,3 +31,34 @@ modal.appendChild(actions);
 modalContainer.appendChild(modal);
 document.body.appendChild(modalContainer);
 
+// Show-Hide functions
+export function showDeleteModal(todoId: number, list: HTMLUListElement): void {
+    deleteTargetId = todoId;
+    listRef = list;
+    modalContainer.classList.remove("hidden");
+}
+
+export function hideDeleteModal(): void {
+    modalContainer.classList.add("hidden");
+    deleteTargetId = null;
+    listRef = null;
+}
+
+confirmBtn.addEventListener("click", () => {
+    if (deleteTargetId !== null && listRef) {
+        deleteTodo(deleteTargetId, listRef);
+    }
+    hideDeleteModal();
+});
+
+cancelBtn.addEventListener("click", hideDeleteModal);
+
+modalContainer.addEventListener("click", (e) => {
+    if (e.target === modalContainer) hideDeleteModal();
+});
+
+document.addEventListener("keydown", (e) => {
+    if (!modalContainer.classList.contains("hidden") && e.key === "Escape") {
+      hideDeleteModal();
+    }
+});
