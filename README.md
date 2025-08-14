@@ -18,7 +18,7 @@ It supports adding, editing, deleting, and filtering tasks, with a modal confirm
 - **CSS**
 
 ## 📂 Folder Structure
-
+```
 └── dist/
 └── src
 |   └── styles.css
@@ -34,6 +34,7 @@ It supports adding, editing, deleting, and filtering tasks, with a modal confirm
 |   └── util
 └── index.html
 └── tsconfig.json
+```
 - dist/ # Compiled JavaScript files
 - src/ # TypeScript source files
 - src/styles/ # CSS styles
